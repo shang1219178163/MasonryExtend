@@ -37,10 +37,7 @@
 - (void)mas_distributeSudokuViewsWithFixedItemWidth:(CGFloat)fixedItemWidth
                                     fixedItemHeight:(CGFloat)fixedItemHeight
                                           warpCount:(NSInteger)warpCount
-                                         topSpacing:(CGFloat)topSpacing
-                                      bottomSpacing:(CGFloat)bottomSpacing
-                                        leadSpacing:(CGFloat)leadSpacing
-                                        tailSpacing:(CGFloat)tailSpacing {
+                                              inset:(UIEdgeInsets)inset {
     if (self.count < 2) {
         NSAssert(self.count>1,@"views to distribute need to bigger than one");
         return;
@@ -71,29 +68,29 @@
             
             // 第一行
             if (currentRow == 0) {
-                make.top.equalTo(tempSuperView).offset(topSpacing);
+                make.top.equalTo(tempSuperView).offset(inset.top);
             }
             // 最后一行
             if (currentRow == rowCount - 1) {
-                make.bottom.equalTo(tempSuperView).offset(-bottomSpacing);
+                make.bottom.equalTo(tempSuperView).offset(-inset.bottom);
             }
             // 中间的若干行
             if (currentRow != 0 && currentRow != rowCount - 1){
-                CGFloat offset = (1-(currentRow/((CGFloat)rowCount-1)))*(fixedItemHeight+topSpacing)-currentRow*bottomSpacing/(((CGFloat)rowCount-1));
+                CGFloat offset = (1-(currentRow/((CGFloat)rowCount-1)))*(fixedItemHeight+inset.top)-currentRow*inset.bottom/(((CGFloat)rowCount-1));
                 make.bottom.equalTo(tempSuperView).multipliedBy(currentRow/((CGFloat)rowCount-1)).offset(offset);
             }
             
             // 第一列
             if (currentColumn == 0) {
-                make.left.equalTo(tempSuperView).offset(leadSpacing);
+                make.left.equalTo(tempSuperView).offset(inset.left);
             }
             // 最后一列
             if (currentColumn == warpCount - 1) {
-                make.right.equalTo(tempSuperView).offset(-tailSpacing);
+                make.right.equalTo(tempSuperView).offset(-inset.right);
             }
             // 中间若干列
             if (currentColumn != 0 && currentColumn != warpCount - 1) {
-                CGFloat offset = (1-(currentColumn/((CGFloat)warpCount-1)))*(fixedItemWidth+leadSpacing)-currentColumn*tailSpacing/(((CGFloat)warpCount-1));
+                CGFloat offset = (1-(currentColumn/((CGFloat)warpCount-1)))*(fixedItemWidth+inset.left)-currentColumn*inset.right/(((CGFloat)warpCount-1));
                 make.right.equalTo(tempSuperView).multipliedBy(currentColumn/((CGFloat)warpCount-1)).offset(offset);
             }
         }];
@@ -104,19 +101,14 @@
 - (void)mas_distributeSudokuViewsWithFixedLineSpacing:(CGFloat)fixedLineSpacing
                                 fixedInteritemSpacing:(CGFloat)fixedInteritemSpacing
                                             warpCount:(NSInteger)warpCount
-                                           topSpacing:(CGFloat)topSpacing
-                                        bottomSpacing:(CGFloat)bottomSpacing
-                                          leadSpacing:(CGFloat)leadSpacing
-                                          tailSpacing:(CGFloat)tailSpacing {
+                                                inset:(UIEdgeInsets)inset {
     
     [self mas_distributeSudokuViewsWithFixedItemWidth:0
                                       fixedItemHeight:0
-                                     fixedLineSpacing:fixedLineSpacing fixedInteritemSpacing:fixedInteritemSpacing
+                                     fixedLineSpacing:fixedLineSpacing
+                                fixedInteritemSpacing:fixedInteritemSpacing
                                             warpCount:warpCount
-                                           topSpacing:topSpacing
-                                        bottomSpacing:bottomSpacing
-                                          leadSpacing:leadSpacing
-                                          tailSpacing:tailSpacing];
+                                                inset:inset];
 }
 
 - (NSArray *)mas_distributeSudokuViewsWithFixedItemWidth:(CGFloat)fixedItemWidth
@@ -124,10 +116,7 @@
                                         fixedLineSpacing:(CGFloat)fixedLineSpacing
                                    fixedInteritemSpacing:(CGFloat)fixedInteritemSpacing
                                                warpCount:(NSInteger)warpCount
-                                              topSpacing:(CGFloat)topSpacing
-                                           bottomSpacing:(CGFloat)bottomSpacing
-                                             leadSpacing:(CGFloat)leadSpacing
-                                             tailSpacing:(CGFloat)tailSpacing {
+                                                   inset:(UIEdgeInsets)inset {
     if (self.count < 1) {
         return self.copy;
     }
@@ -175,7 +164,7 @@
             
             // 第一行
             if (currentRow == 0) {
-                make.top.equalTo(tempSuperView).offset(topSpacing);
+                make.top.equalTo(tempSuperView).offset(inset.top);
             }
             // 最后一行
             if (currentRow == rowCount - 1) {
@@ -183,7 +172,7 @@
                 if (currentRow != 0 && i-columnCount >= 0) {
                     make.top.equalTo(((MAS_VIEW *)tempViews[i-columnCount]).mas_bottom).offset(fixedLineSpacing);
                 }
-                make.bottom.equalTo(tempSuperView).offset(-bottomSpacing);
+                make.bottom.equalTo(tempSuperView).offset(-inset.bottom);
             }
             // 中间的若干行
             if (currentRow != 0 && currentRow != rowCount - 1) {
@@ -192,7 +181,7 @@
             
             // 第一列
             if (currentColumn == 0) {
-                make.left.equalTo(tempSuperView).offset(leadSpacing);
+                make.left.equalTo(tempSuperView).offset(inset.left);
             }
             // 最后一列
             if (currentColumn == columnCount - 1) {
@@ -200,7 +189,7 @@
                 if (currentColumn != 0) {
                     make.left.equalTo(prev.mas_right).offset(fixedInteritemSpacing);
                 }
-                make.right.equalTo(tempSuperView).offset(-tailSpacing);
+                make.right.equalTo(tempSuperView).offset(-inset.right);
             }
             // 中间若干列
             if (currentColumn != 0 && currentColumn != warpCount - 1) {
@@ -210,51 +199,6 @@
         prev = v;
     }
     return tempViews;
-}
-
-- (void)mas_distributeSudokuViewsWithFixedItemWidth:(CGFloat)fixedItemWidth
-                                    fixedItemHeight:(CGFloat)fixedItemHeight
-                                          warpCount:(NSInteger)warpCount
-                                              inset:(UIEdgeInsets)inset{
-    [self mas_distributeSudokuViewsWithFixedItemWidth:fixedItemWidth
-                                      fixedItemHeight:fixedItemHeight
-                                            warpCount:warpCount
-                                           topSpacing:inset.top
-                                        bottomSpacing:inset.bottom
-                                          leadSpacing:inset.left
-                                          tailSpacing:inset.right];
-}
-
-
-- (void)mas_distributeSudokuViewsWithFixedLineSpacing:(CGFloat)fixedLineSpacing
-                                fixedInteritemSpacing:(CGFloat)fixedInteritemSpacing
-                                            warpCount:(NSInteger)warpCount
-                                                inset:(UIEdgeInsets)inset{
-    [self mas_distributeSudokuViewsWithFixedLineSpacing:fixedLineSpacing
-                                  fixedInteritemSpacing:fixedInteritemSpacing
-                                              warpCount:warpCount
-                                             topSpacing:inset.top
-                                          bottomSpacing:inset.bottom
-                                            leadSpacing:inset.left
-                                            tailSpacing:inset.right];
-
-}
-
-- (NSArray *)mas_distributeSudokuViewsWithFixedItemWidth:(CGFloat)fixedItemWidth
-                                         fixedItemHeight:(CGFloat)fixedItemHeight
-                                        fixedLineSpacing:(CGFloat)fixedLineSpacing
-                                   fixedInteritemSpacing:(CGFloat)fixedInteritemSpacing
-                                               warpCount:(NSInteger)warpCount
-                                                   inset:(UIEdgeInsets)inset{
-    return [self mas_distributeSudokuViewsWithFixedItemWidth:fixedItemWidth
-                                             fixedItemHeight:fixedItemHeight
-                                            fixedLineSpacing:fixedLineSpacing
-                                       fixedInteritemSpacing:fixedInteritemSpacing
-                                                   warpCount:warpCount
-                                                  topSpacing:inset.top
-                                               bottomSpacing:inset.bottom
-                                                 leadSpacing:inset.left
-                                                 tailSpacing:inset.right];
 }
 
 @end
