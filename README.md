@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/cocoapods/l/MasonryExtend.svg?style=flat)](https://cocoapods.org/pods/MasonryExtend)
 [![Platform](https://img.shields.io/cocoapods/p/MasonryExtend.svg?style=flat)](https://cocoapods.org/pods/MasonryExtend)
 
-update from: git@github.com:iStarEternal/Sudoku.git
+update from: https://github.com/iStarEternal/Sudoku
 
 ## Screenshots
 ![](https://github.com/shang1219178163/MasonryExtend/blob/master/screenshot/Simulator%20Screen%20Shot%20-%20iPhone%206s%20Plus%20-%202020-06-25%20at%2016.22.20.png?raw=true)
