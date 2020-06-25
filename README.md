@@ -5,6 +5,8 @@
 [![License](https://img.shields.io/cocoapods/l/MasonryExtend.svg?style=flat)](https://cocoapods.org/pods/MasonryExtend)
 [![Platform](https://img.shields.io/cocoapods/p/MasonryExtend.svg?style=flat)](https://cocoapods.org/pods/MasonryExtend)
 
+update from: git@github.com:iStarEternal/Sudoku.git
+
 ## Screenshots
 
 ![]()
