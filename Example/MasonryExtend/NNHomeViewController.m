@@ -11,6 +11,7 @@
 #import "MasonryExtend.h"
 
 #import "UIView+Ext.h"
+#import "UIButton+Ext.h"
 
 @interface NNHomeViewController ()
 
@@ -34,7 +35,9 @@
         NSString *title = [NSString stringWithFormat:@"%@%@", clsName, @(obj.tag)];
         [sender setTitle:title forState:UIControlStateNormal];
         [sender setTitleColor:UIColor.blackColor forState:UIControlStateNormal];
-        sender.backgroundColor = UIColor.whiteColor;
+        [sender setBackgroundColor:UIColor.whiteColor forState:UIControlStateNormal];
+        [sender setBackgroundColor:UIColor.systemBlueColor forState:UIControlStateHighlighted];
+        [sender setBackgroundColor:UIColor.grayColor forState:UIControlStateDisabled];
     }];
 
     [list mas_distributeSudokuViewsWithFixedLineSpacing:5

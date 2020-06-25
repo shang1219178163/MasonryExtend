@@ -1,7 +1,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'MasonryExtend'
-  s.version          = '1.0.2'
+  s.version          = '1.0.3'
   s.summary          = 'Extend of Masonry.'
   s.description      = '(九宫格) distributeSudokuViews.'
 
@@ -12,7 +12,7 @@ Pod::Spec.new do |s|
   s.source           = { :git => 'https://github.com/shang1219178163/MasonryExtend.git', :tag => s.version.to_s }
 
   s.ios.deployment_target = '9.0'
-  s.swift_version = "5.0"
+#  s.swift_version = "5.0"
   s.requires_arc = true
 
   s.frameworks = 'UIKit', 'CoreFoundation'
