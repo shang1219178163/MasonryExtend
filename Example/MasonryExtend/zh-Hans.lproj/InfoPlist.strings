@@ -1,0 +1,9 @@
+/* 
+  InfoPlist.strings
+  MasonryExtend
+
+  Created by Bin Shang on 2019/12/13.
+  Copyright © 2019 shang1219178163. All rights reserved.
+*/
+//CFBundleDisplayName = "OC App模板";
+NSCameraUsageDescription ="App需要您的相机权限";
