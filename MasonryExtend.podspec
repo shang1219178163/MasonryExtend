@@ -1,7 +1,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'MasonryExtend'
-  s.version          = '1.0.0'
+  s.version          = '1.0.0.1'
   s.summary          = 'Extend of Masonry.'
   s.description      = '(九宫格) distributeSudokuViews.'
 
