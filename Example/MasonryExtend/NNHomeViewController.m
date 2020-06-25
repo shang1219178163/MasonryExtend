@@ -37,15 +37,15 @@
         sender.backgroundColor = UIColor.whiteColor;
     }];
 
-//    [list mas_distributeSudokuViewsWithFixedLineSpacing:5
-//                                  fixedInteritemSpacing:5
-//                                              warpCount:3
-//                                                  inset:UIEdgeInsetsMake(10, 10, 10, 10)];
+    [list mas_distributeSudokuViewsWithFixedLineSpacing:5
+                                  fixedInteritemSpacing:5
+                                              warpCount:3
+                                                  inset:UIEdgeInsetsMake(10, 10, 10, 10)];
     
-    [list mas_distributeSudokuViewsWithFixedItemWidth:120
-                                      fixedItemHeight:120
-                                            warpCount:3
-                                                inset:UIEdgeInsetsMake(10, 10, 10, 10)];
+//    [list mas_distributeSudokuViewsWithFixedItemWidth:120
+//                                      fixedItemHeight:120
+//                                            warpCount:3
+//                                                inset:UIEdgeInsetsMake(10, 10, 10, 10)];
 
     self.view.backgroundColor = UIColor.systemGreenColor;
 }
