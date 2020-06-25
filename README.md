@@ -15,6 +15,16 @@ update from: https://github.com/iStarEternal/Sudoku
 
 To run the example project, clone the repo, and run `pod install` from the Example directory first.
 
+    [list mas_distributeSudokuViewsWithFixedLineSpacing:5
+                                  fixedInteritemSpacing:5
+                                              warpCount:3
+                                                  inset:UIEdgeInsetsMake(10, 10, 10, 10)];
+    //and
+    [list mas_distributeSudokuViewsWithFixedItemWidth:120
+                                      fixedItemHeight:120
+                                            warpCount:3
+                                                inset:UIEdgeInsetsMake(10, 10, 10, 10)];
+
 ## Requirements
 
 ## Installation
