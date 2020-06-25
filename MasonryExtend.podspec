@@ -1,9 +1,9 @@
 
 Pod::Spec.new do |s|
   s.name             = 'MasonryExtend'
-  s.version          = '0.1.0'
-  s.summary          = 'A short description of MasonryExtend.'
-  s.description      = 'TODO: Add long description of the pod here.'
+  s.version          = '1.0.0'
+  s.summary          = 'Extend of Masonry.'
+  s.description      = '(九宫格) distributeSudokuViews.'
 
   s.homepage         = 'https://github.com/shang1219178163/MasonryExtend'
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
@@ -26,6 +26,5 @@ Pod::Spec.new do |s|
   # }
 
   # s.public_header_files = 'Pod/Classes/**/*.h'
-  # s.frameworks = 'UIKit', 'MapKit'
-  # s.dependency 'AFNetworking', '~> 2.3'
+   s.dependency 'Masonry'
 end
