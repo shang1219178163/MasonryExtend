@@ -1,16 +1,24 @@
 PODS:
-  - MasonryExtend (0.1.0)
+  - Masonry (1.1.0)
+  - MasonryExtend (1.0.2):
+    - Masonry
 
 DEPENDENCIES:
+  - Masonry
   - MasonryExtend (from `../`)
+
+SPEC REPOS:
+  https://github.com/CocoaPods/Specs.git:
+    - Masonry
 
 EXTERNAL SOURCES:
   MasonryExtend:
     :path: "../"
 
 SPEC CHECKSUMS:
-  MasonryExtend: 623acac852e3329d2ce9feff0f3e9179fe8ab5d8
+  Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
+  MasonryExtend: 54cbb811a9a64d3f5edf2cf1bfb75a28074e3578
 
-PODFILE CHECKSUM: cd8fc96f613662187a6e8f7bbe719607bf0ac205
+PODFILE CHECKSUM: 4cfbf3cfcc88012207c2abc548bae627301a2e61
 
 COCOAPODS: 1.9.1
