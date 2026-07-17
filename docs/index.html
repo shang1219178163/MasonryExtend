@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MasonryExtend — Masonry 布局扩展</title>
+  <meta name="description" content="Masonry 扩展：九宫格布局与 Content Hugging / Compression Resistance 链式 API。兼容 CocoaPods 与 SPM。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=IBM+Plex+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0c0d0f;
+      --bg-elevated: #14161a;
+      --bg-card: #181b21;
+      --border: rgba(255, 255, 255, 0.08);
+      --text: #e8eaed;
+      --text-muted: #8b919a;
+      --accent: #f05138;
+      --accent-soft: rgba(240, 81, 56, 0.14);
+      --accent-glow: rgba(240, 81, 56, 0.35);
+      --swift-blue: #5ac8fa;
+      --mono: "IBM Plex Mono", ui-monospace, monospace;
+      --sans: "DM Sans", system-ui, sans-serif;
+      --serif: "Instrument Serif", Georgia, serif;
+      --radius: 14px;
+      --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 15% -10%, rgba(240, 81, 56, 0.18), transparent 55%),
+        radial-gradient(ellipse 60% 40% at 90% 20%, rgba(90, 200, 250, 0.08), transparent 50%),
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: auto, auto, 48px 48px, 48px 48px;
+      mask-image: radial-gradient(ellipse 100% 80% at 50% 0%, black 20%, transparent 85%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      opacity: 0.035;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+    }
+    .shell {
+      position: relative;
+      z-index: 1;
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 0 24px 96px;
+    }
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 28px 0 48px;
+      animation: rise 0.8s var(--ease-out) both;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--text);
+    }
+    .logo-mark {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--accent), #ff8a65);
+      display: grid;
+      place-items: center;
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 500;
+      color: #fff;
+      box-shadow: 0 0 24px var(--accent-glow);
+    }
+    .logo-text {
+      font-family: var(--mono);
+      font-size: 14px;
+      letter-spacing: 0.04em;
+    }
+    .nav-links {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 14px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      transition: color 0.2s, background 0.2s;
+    }
+    .nav-links a:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .nav-links .cta {
+      background: var(--accent);
+      color: #fff;
+      font-weight: 500;
+    }
+    .nav-links .cta:hover {
+      background: #ff6347;
+      color: #fff;
+      box-shadow: 0 0 20px var(--accent-glow);
+    }
+    .hero {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 48px;
+      align-items: end;
+      margin-bottom: 72px;
+    }
+    .hero-copy {
+      animation: rise 0.9s var(--ease-out) 0.1s both;
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 20px;
+    }
+    .eyebrow::before {
+      content: "";
+      width: 24px;
+      height: 1px;
+      background: var(--accent);
+    }
+    .hero h1 {
+      font-family: var(--serif);
+      font-size: clamp(2.8rem, 6vw, 4.5rem);
+      font-weight: 400;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      margin-bottom: 24px;
+    }
+    .hero h1 em {
+      font-style: italic;
+      color: var(--accent);
+    }
+    .hero-desc {
+      font-size: 18px;
+      color: var(--text-muted);
+      max-width: 480px;
+      margin-bottom: 32px;
+    }
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .pill {
+      font-family: var(--mono);
+      font-size: 12px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text-muted);
+    }
+    .pill strong { color: var(--swift-blue); font-weight: 500; }
+    .install-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      animation: rise 0.9s var(--ease-out) 0.25s both;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+    }
+    .install-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .dots { display: flex; gap: 6px; }
+    .dots span {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.12);
+    }
+    .dots span:first-child { background: #ff5f57; }
+    .dots span:nth-child(2) { background: #febc2e; }
+    .dots span:nth-child(3) { background: #28c840; }
+    .install-title {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .install-tabs {
+      display: flex;
+      gap: 4px;
+      padding: 10px 12px 0;
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .install-tab {
+      flex: 1;
+      padding: 8px 10px;
+      border: none;
+      border-radius: 8px 8px 0 0;
+      background: transparent;
+      color: var(--text-muted);
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: color 0.2s, background 0.2s;
+    }
+    .install-tab:hover { color: var(--text); }
+    .install-tab.active {
+      color: var(--text);
+      background: var(--bg-card);
+      box-shadow: inset 0 -1px 0 var(--bg-card);
+    }
+    .install-body {
+      padding: 20px 18px 22px;
+    }
+    .install-body pre {
+      font-family: var(--mono);
+      font-size: 13px;
+      line-height: 1.7;
+      color: #c5cad3;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    .install-body .kw { color: #ff7ab2; }
+    .install-body .str { color: #98d982; }
+    .install-body .url { color: var(--swift-blue); }
+    .install-panel { display: none; }
+    .install-panel.active { display: block; }
+    .copy-btn {
+      margin-top: 16px;
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: transparent;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 13px;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s, transform 0.15s;
+    }
+    .copy-btn:hover {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+    .copy-btn:active { transform: scale(0.98); }
+    .section-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 28px;
+      animation: rise 0.8s var(--ease-out) 0.35s both;
+    }
+    .section-head h2 {
+      font-family: var(--serif);
+      font-size: clamp(1.8rem, 3vw, 2.4rem);
+      font-weight: 400;
+    }
+    .section-head p {
+      color: var(--text-muted);
+      font-size: 15px;
+      max-width: 420px;
+    }
+    .search-wrap {
+      position: relative;
+      width: min(100%, 320px);
+    }
+    .search-wrap input {
+      width: 100%;
+      padding: 12px 16px 12px 42px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--bg-elevated);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .search-wrap input:focus {
+      border-color: rgba(240, 81, 56, 0.5);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+    .search-wrap svg {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 18px;
+      height: 18px;
+      stroke: var(--text-muted);
+      fill: none;
+      stroke-width: 2;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 18px;
+    }
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      transition: transform 0.35s var(--ease-out), border-color 0.25s, box-shadow 0.35s;
+      animation: rise 0.7s var(--ease-out) both;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(240, 81, 56, 0.35);
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(240, 81, 56, 0.1);
+    }
+    .card.hidden { display: none; }
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .card-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 500;
+      flex-shrink: 0;
+    }
+    .card h3 {
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+    .card-tag {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      padding: 4px 8px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.04);
+      white-space: nowrap;
+    }
+    .card-desc {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.55;
+    }
+    .snippet {
+      background: #0a0b0d;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+      overflow-x: auto;
+    }
+    .snippet code {
+      font-family: var(--mono);
+      font-size: 12px;
+      line-height: 1.65;
+      color: #b8bec8;
+      white-space: pre;
+    }
+    .snippet .cm { color: #5c6370; }
+    .snippet .fn { color: #61afef; }
+    .snippet .ty { color: #e5c07b; }
+    .snippet .str { color: #98c379; }
+    .snippet .kw { color: #c678dd; }
+    .footer {
+      margin-top: 80px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 16px;
+      color: var(--text-muted);
+      font-size: 14px;
+      animation: rise 0.8s var(--ease-out) 0.5s both;
+    }
+    .footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .footer a:hover { text-decoration: underline; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+    @media (max-width: 860px) {
+      .hero { grid-template-columns: 1fr; gap: 36px; }
+      .nav-links a:not(.cta) { display: none; }
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <nav class="nav">
+      <a class="logo" href="#">
+        <span class="logo-mark">ME</span>
+        <span class="logo-text">MasonryExtend</span>
+      </a>
+      <div class="nav-links">
+        <a href="#modules">模块</a>
+        <a href="https://github.com/shang1219178163/MasonryExtend/blob/master/README.md" target="_blank" rel="noopener">README</a>
+        <a class="cta" href="https://github.com/shang1219178163/MasonryExtend" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </nav>
+
+    <header class="hero">
+      <div class="hero-copy">
+        <div class="eyebrow">v1.0.3 · CocoaPods · SPM</div>
+        <h1>Masonry 扩展，<em>九宫格</em>一行到位</h1>
+        <p class="hero-desc">
+          在 Masonry 之上补齐九宫格分布与 Content Hugging / Compression
+          链式写法，少写约束样板，多写业务布局。
+        </p>
+        <div class="hero-meta">
+          <span class="pill"><strong>iOS</strong> 9+</span>
+          <span class="pill"><strong>tvOS</strong> 9+</span>
+          <span class="pill">ObjC · <strong>Masonry</strong></span>
+          <span class="pill">MIT</span>
+        </div>
+      </div>
+
+      <aside class="install-card">
+        <div class="install-header">
+          <div class="dots"><span></span><span></span><span></span></div>
+          <span class="install-title">Install</span>
+        </div>
+        <div class="install-tabs" role="tablist">
+          <button class="install-tab active" type="button" data-tab="spm" role="tab" aria-selected="true">SPM</button>
+          <button class="install-tab" type="button" data-tab="pods" role="tab" aria-selected="false">CocoaPods</button>
+        </div>
+        <div class="install-body">
+          <div class="install-panel active" id="panel-spm" role="tabpanel">
+            <pre id="spm-code"><span class="kw">dependencies</span>: [
+    .<span class="kw">package</span>(
+        <span class="kw">url</span>: <span class="str">"<span class="url">https://github.com/shang1219178163/MasonryExtend.git</span>"</span>,
+        <span class="kw">from</span>: <span class="str">"1.0.3"</span>
+    )
+]</pre>
+          </div>
+          <div class="install-panel" id="panel-pods" role="tabpanel">
+            <pre id="pods-code"><span class="kw">pod</span> <span class="str">'MasonryExtend'</span></pre>
+          </div>
+          <button class="copy-btn" type="button" id="copy-install">复制 SPM 依赖</button>
+        </div>
+      </aside>
+    </header>
+
+    <section id="modules">
+      <div class="section-head">
+        <div>
+          <h2>模块速览</h2>
+          <p>按场景浏览常用 API。输入关键词可即时筛选。</p>
+        </div>
+        <div class="search-wrap">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+          <input type="search" id="search" placeholder="搜索 九宫格、hugging、Sudoku…" autocomplete="off">
+        </div>
+      </div>
+
+      <div class="grid" id="module-grid">
+        <article class="card" data-keywords="sudoku 九宫格 distribute spacing warp inset nsarray linespacing interitem">
+          <div class="card-top">
+            <div class="card-icon" style="background: rgba(240,81,56,0.15); color: var(--accent);">SK</div>
+            <span class="card-tag">九宫格</span>
+          </div>
+          <h3>固定间距分布</h3>
+          <p class="card-desc">Item 尺寸自适应，行间距 / 列间距固定，按 warpCount 折行排布。</p>
+          <div class="snippet"><code>[list <span class="fn">mas_distributeSudokuViewsWithFixedLineSpacing</span>:5
+                              <span class="fn">fixedInteritemSpacing</span>:5
+                                          <span class="fn">warpCount</span>:3
+                                              <span class="fn">inset</span>:<span class="ty">UIEdgeInsetsMake</span>(10, 10, 10, 10)];</code></div>
+        </article>
+
+        <article class="card" data-keywords="sudoku 九宫格 fixed size itemwidth itemheight warp inset">
+          <div class="card-top">
+            <div class="card-icon" style="background: rgba(90,200,250,0.12); color: var(--swift-blue);">SZ</div>
+            <span class="card-tag">九宫格</span>
+          </div>
+          <h3>固定尺寸分布</h3>
+          <p class="card-desc">指定 Item 宽高，间距随容器自适应，适合按钮墙、图标矩阵。</p>
+          <div class="snippet"><code>[list <span class="fn">mas_distributeSudokuViewsWithFixedItemWidth</span>:120
+                                  <span class="fn">fixedItemHeight</span>:120
+                                        <span class="fn">warpCount</span>:3
+                                            <span class="fn">inset</span>:<span class="ty">UIEdgeInsetsMake</span>(10, 10, 10, 10)];</code></div>
+        </article>
+
+        <article class="card" data-keywords="sudoku 九宫格 fixed both size spacing empty fill superview">
+          <div class="card-top">
+            <div class="card-icon" style="background: rgba(152,217,130,0.12); color: #98d982;">FX</div>
+            <span class="card-tag">九宫格</span>
+          </div>
+          <h3>尺寸 + 间距全固定</h3>
+          <p class="card-desc">可由内容撑开 SuperView；warpCount 大于数量时自动填充空白 View。</p>
+          <div class="snippet"><code><span class="ty">NSArray</span> *filled =
+[list <span class="fn">mas_distributeSudokuViewsWithFixedItemWidth</span>:0
+                             <span class="fn">fixedItemHeight</span>:0
+                            <span class="fn">fixedLineSpacing</span>:8
+                       <span class="fn">fixedInteritemSpacing</span>:8
+                                       <span class="fn">warpCount</span>:3
+                                           <span class="fn">inset</span>:<span class="ty">UIEdgeInsetsZero</span>];</code></div>
+        </article>
+
+        <article class="card" data-keywords="forbearance hugging compression resistance priority horizontal vertical">
+          <div class="card-top">
+            <div class="card-icon" style="background: rgba(255,183,77,0.12); color: #ffb74d;">HG</div>
+            <span class="card-tag">优先级</span>
+          </div>
+          <h3>Content Hugging</h3>
+          <p class="card-desc">在 mas_makeConstraints 内链式设置抗拉伸优先级，贴近 Masonry DSL。</p>
+          <div class="snippet"><code>[label <span class="fn">mas_makeConstraints</span>:^(<span class="ty">MASConstraintMaker</span> *make) {
+    make.<span class="fn">hugging</span>.<span class="fn">horizontal</span>.<span class="fn">priorityHigh</span>();
+    make.<span class="fn">hugging</span>.<span class="fn">vertical</span>.<span class="fn">priority</span>(250);
+}];</code></div>
+        </article>
+
+        <article class="card" data-keywords="forbearance compression resistance priority required low medium">
+          <div class="card-top">
+            <div class="card-icon" style="background: rgba(198,120,221,0.12); color: #c678dd;">CR</div>
+            <span class="card-tag">优先级</span>
+          </div>
+          <h3>Compression Resistance</h3>
+          <p class="card-desc">链式配置抗压缩，避免标签被挤压；支持 Required / High / Low 等档位。</p>
+          <div class="snippet"><code>[title <span class="fn">mas_makeConstraints</span>:^(<span class="ty">MASConstraintMaker</span> *make) {
+    make.<span class="fn">compression</span>.<span class="fn">horizontal</span>.<span class="fn">priorityRequired</span>();
+    make.<span class="fn">compressionResistance</span>.<span class="fn">vertical</span>.<span class="fn">priorityLow</span>();
+}];</code></div>
+        </article>
+
+        <article class="card" data-keywords="uiview forbearance hugging compression property axis layoutpriority">
+          <div class="card-top">
+            <div class="card-icon" style="background: rgba(255,255,255,0.06); color: #aaa;">UV</div>
+            <span class="card-tag">UIView</span>
+          </div>
+          <h3>UIView 优先级属性</h3>
+          <p class="card-desc">直接读写四轴优先级属性，不必每次走进 Constraints Block。</p>
+          <div class="snippet"><code>view.<span class="fn">horizontalHuggingPriority</span> = <span class="ty">UILayoutPriorityDefaultHigh</span>;
+view.<span class="fn">verticalCompressionResistancePriority</span> =
+    <span class="ty">UILayoutPriorityRequired</span>;</code></div>
+        </article>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <span>© MasonryExtend · MIT License</span>
+      <span>完整 API 见 <a href="https://github.com/shang1219178163/MasonryExtend/blob/master/README.md" target="_blank" rel="noopener">README.md</a></span>
+    </footer>
+  </div>
+
+  <script>
+    const cards = document.querySelectorAll(".card");
+    const searchInput = document.getElementById("search");
+    const copyBtn = document.getElementById("copy-install");
+    const tabs = document.querySelectorAll(".install-tab");
+    const panels = {
+      spm: document.getElementById("panel-spm"),
+      pods: document.getElementById("panel-pods")
+    };
+    const copyText = {
+      spm: `.package(url: "https://github.com/shang1219178163/MasonryExtend.git", from: "1.0.3")`,
+      pods: `pod 'MasonryExtend'`
+    };
+    const copyLabel = {
+      spm: "复制 SPM 依赖",
+      pods: "复制 Podfile 依赖"
+    };
+    let activeTab = "spm";
+    cards.forEach((card, index) => {
+      card.style.animationDelay = `${0.4 + index * 0.08}s`;
+    });
+    searchInput.addEventListener("input", () => {
+      const query = searchInput.value.trim().toLowerCase();
+      cards.forEach((card) => {
+        const text = (card.textContent + " " + (card.dataset.keywords || "")).toLowerCase();
+        card.classList.toggle("hidden", query.length > 0 && !text.includes(query));
+      });
+    });
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        activeTab = tab.dataset.tab;
+        tabs.forEach((item) => {
+          const isActive = item === tab;
+          item.classList.toggle("active", isActive);
+          item.setAttribute("aria-selected", String(isActive));
+        });
+        Object.keys(panels).forEach((key) => {
+          panels[key].classList.toggle("active", key === activeTab);
+        });
+        copyBtn.textContent = copyLabel[activeTab];
+      });
+    });
+    copyBtn.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(copyText[activeTab]);
+        copyBtn.textContent = "已复制 ✓";
+        setTimeout(() => { copyBtn.textContent = copyLabel[activeTab]; }, 2000);
+      } catch {
+        copyBtn.textContent = "请手动复制";
+      }
+    });
+  </script>
+</body>
+</html>
