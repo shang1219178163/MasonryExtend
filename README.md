@@ -9,7 +9,7 @@ update from: https://github.com/iStarEternal/Sudoku
 
 ## Docs
 
-文档站点（与 SwiftExpand 同风格）：[docs/index.html](./docs/index.html)
+文档站点：https://shang1219178163.github.io/MasonryExtend/
 
 ## Screenshots
 ![](https://github.com/shang1219178163/MasonryExtend/blob/master/screenshot/Simulator%20Screen%20Shot%20-%20iPhone%206s%20Plus%20-%202020-06-25%20at%2016.22.20.png?raw=true)
