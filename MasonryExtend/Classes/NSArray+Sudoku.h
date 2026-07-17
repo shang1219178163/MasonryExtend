@@ -6,9 +6,7 @@
 //  Copyright © 2016年 SinaPay. All rights reserved.
 //
 
-#import "MASUtilities.h"
-#import "MASConstraintMaker.h"
-#import "MASViewAttribute.h"
+#import <Masonry/Masonry.h>
 
 @interface NSArray (Sudoku)
 

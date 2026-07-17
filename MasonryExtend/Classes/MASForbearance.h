@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "MASUtilities.h"
+#import <Masonry/Masonry.h>
 
 typedef NS_OPTIONS(NSUInteger, MASForbearanceRule) {
     MASForbearanceRuleHorizontal     = 0x01 << 0,

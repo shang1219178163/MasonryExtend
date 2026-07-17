@@ -7,7 +7,6 @@
 //
 
 #import "NSArray+Sudoku.h"
-#import "View+MASAdditions.h"
 
 @implementation NSArray (Sudoku)
 

@@ -29,12 +29,33 @@ To run the example project, clone the repo, and run `pod install` from the Examp
 
 ## Installation
 
-MasonryExtend is available through [CocoaPods](https://cocoapods.org). To install
-it, simply add the following line to your Podfile:
+### CocoaPods
+
+[CocoaPods](https://cocoapods.org) is a dependency manager for Cocoa projects. To integrate MasonryExtend into your Xcode project using CocoaPods, specify it in your `Podfile`:
 
 ```ruby
 pod 'MasonryExtend'
 ```
+
+### Swift Package Manager
+
+[Swift Package Manager](https://swift.org/package-manager/) is a tool for automating the distribution of Swift code and is integrated into the Swift build system.
+
+To add MasonryExtend to your Xcode project, select **File → Add Package Dependencies…** and enter:
+
+```
+https://github.com/shang1219178163/MasonryExtend.git
+```
+
+Or add it to your `Package.swift` dependencies:
+
+```swift
+dependencies: [
+    .package(url: "https://github.com/shang1219178163/MasonryExtend.git", from: "1.0.3")
+]
+```
+
+> SPM 依赖使用 [wei18/Masonry](https://github.com/wei18/Masonry)（官方仓库尚未提供 `Package.swift`）。CocoaPods 仍使用官方 `Masonry`。
 
 ## Author
 

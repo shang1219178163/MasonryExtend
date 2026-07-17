@@ -6,7 +6,7 @@
 //  Copyright © 2016年 Star.China All rights reserved.
 //
 
-#import "MASConstraintMaker.h"
+#import <Masonry/Masonry.h>
 #import "MASForbearance.h"
 
 @interface MASConstraintMaker (Forbearance) <MASForbearanceDelegate>
